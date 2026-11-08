@@ -125,7 +125,7 @@ model.pickle と scaler.pickle を保存しました
 python -m uvicorn main:app --reload --port 8080
 ```
 
-ブラウザで `http://127.0.0.1:8080/` を開き、値を入れて「予測する」。`適正価格は 43.180284 です` のように表示されればOK。
+ブラウザで `http://127.0.0.1:8080/` を開き、値を入れて「予測する」。`適正価格は 43.250271 です` のように表示されればOK（下のURLの値・train.py 直後の私の環境での例）。
 URLで直接確かめることもできます：`http://127.0.0.1:8080/predict_price/?station_dist=84.9&conveni_num=10&milk_consum=6.6&income=23400&city_flag=0`
 
 止めるときは `Ctrl + C`。
