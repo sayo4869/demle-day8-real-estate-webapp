@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>不動産価格予測</title>
+  </head>
+  <body>
+    <h1>不動産価格予測</h1>
+    <!-- name 属性は main.py の引数名と1文字も違わずにそろえる（講座版は convini_num になっていて値が届かなかった） -->
+    <form action="predict_price/" method="get">
+      <table>
+        <tr><td>最も近い駅からの距離</td><td><input type="text" name="station_dist" value="0.0"></td></tr>
+        <tr><td>徒歩10分圏内のコンビニエンスストアの数</td><td><input type="text" name="conveni_num" value="0"></td></tr>
+        <tr><td>家庭内の牛乳の消費量</td><td><input type="text" name="milk_consum" value="0.0"></td></tr>
+        <tr><td>世帯主の年収</td><td><input type="text" name="income" value="0.0"></td></tr>
+        <tr><td>都市部?(Yes:1 No:0)</td><td><input type="text" name="city_flag" value="0"></td></tr>
+      </table>
+      <input type="submit" value="予測する">
+    </form>
+  </body>
+</html>
