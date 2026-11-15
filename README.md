@@ -1,5 +1,22 @@
 # demle-day8-real-estate-webapp
 
+> 🎨 **このブランチ（`rich-ui`）は、画面を作り込んだ版です。** モデル・URL・pickle の置き方は `main` ブランチと同じで、`templates/` と `main.py` だけが違います。
+>
+> | | `main` ブランチ | `rich-ui` ブランチ |
+> |---|---|---|
+> | 入力画面 | 講座と同じシンプルなフォーム | スライダー＋数値入力、エリアの切り替えボタン、ダークテーマ |
+> | 予測 | 送信すると結果ページ | **動かした瞬間に予測が変わる**（`GET /api/predict` を JavaScript から呼ぶ） |
+> | 結果 | 「適正価格は ○○ です」 | 大きな数字、入力した条件の一覧、**どの条件が価格を上げ／下げたか**の棒グラフ |
+>
+> ```bash
+> git clone -b rich-ui https://github.com/sayo4869/demle-day8-real-estate-webapp.git webapp-rich
+> # すでに clone してある人は： git switch rich-ui
+> ```
+>
+> 棒グラフの値は「係数 × 標準化した値」です。線形モデル（SGDRegressor）なので、**切片 ＋ 棒の合計 ＝ 予測値** になります。
+> JavaScript が動かない環境でも、「結果ページで見る」ボタンで従来どおり予測できます。
+
+
 **不動産価格を予測する機械学習モデルを、FastAPI の Web アプリにして Amazon EC2 にデプロイする**練習用のコードです。
 データミックス DEMLE Day8「【実践編】不動産価格の予測モデルをデプロイしよう」の復習用に、自分で書き直しました。
 

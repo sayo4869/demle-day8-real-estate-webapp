@@ -1,21 +1,232 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <title>不動産価格予測</title>
-  </head>
-  <body>
-    <h1>不動産価格予測</h1>
-    <!-- name 属性は main.py の引数名と1文字も違わずにそろえる（講座版は convini_num になっていて値が届かなかった） -->
-    <form action="predict_price/" method="get">
-      <table>
-        <tr><td>最も近い駅からの距離</td><td><input type="text" name="station_dist" value="0.0"></td></tr>
-        <tr><td>徒歩10分圏内のコンビニエンスストアの数</td><td><input type="text" name="conveni_num" value="0"></td></tr>
-        <tr><td>家庭内の牛乳の消費量</td><td><input type="text" name="milk_consum" value="0.0"></td></tr>
-        <tr><td>世帯主の年収</td><td><input type="text" name="income" value="0.0"></td></tr>
-        <tr><td>都市部?(Yes:1 No:0)</td><td><input type="text" name="city_flag" value="0"></td></tr>
-      </table>
-      <input type="submit" value="予測する">
-    </form>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>不動産価格予測 | Real Estate Price AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b1020; --bg2: #121a33; --card: rgba(255,255,255,.06); --line: rgba(255,255,255,.12);
+      --text: #e8ecf8; --muted: #9aa5c4; --accent: #7c5cff; --accent2: #22d3ee; --plus: #34d399; --minus: #fb7185;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      font-family: "Inter", "Noto Sans JP", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 500px at 10% -10%, rgba(124,92,255,.35), transparent 60%),
+        radial-gradient(700px 400px at 100% 0%, rgba(34,211,238,.22), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 40px 20px 60px; }
+    header .tag { display: inline-flex; gap: 8px; align-items: center; font-size: 12px; letter-spacing: .08em; color: var(--accent2);
+      border: 1px solid rgba(34,211,238,.35); border-radius: 999px; padding: 4px 12px; background: rgba(34,211,238,.08); }
+    header h1 { font-size: clamp(28px, 4.4vw, 44px); line-height: 1.2; margin: 14px 0 8px; font-weight: 900; }
+    header h1 span { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    header p { color: var(--muted); margin: 0 0 28px; }
+
+    .grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 20px; align-items: start; }
+    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 24px;
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+    .card h2 { font-size: 14px; letter-spacing: .1em; color: var(--muted); margin: 0 0 18px; font-weight: 600; }
+
+    .field { padding: 14px 0; border-bottom: 1px dashed var(--line); }
+    .field:last-of-type { border-bottom: 0; }
+    .field .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+    .field label { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+    .icon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: rgba(124,92,255,.18); font-size: 18px; }
+    .num { display: flex; align-items: center; gap: 6px; }
+    .num input { width: 110px; text-align: right; font: 600 16px "Inter", sans-serif; color: var(--text); background: rgba(0,0,0,.25);
+      border: 1px solid var(--line); border-radius: 10px; padding: 7px 10px; }
+    .num input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+    .num small { color: var(--muted); min-width: 2.5em; }
+    .hint { color: var(--muted); font-size: 12px; margin-top: 6px; }
+
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 999px; outline: none;
+      background: linear-gradient(90deg, var(--accent) var(--p, 50%), rgba(255,255,255,.12) var(--p, 50%)); }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #fff;
+      border: 4px solid var(--accent); box-shadow: 0 0 0 6px rgba(124,92,255,.2); cursor: pointer; }
+    input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 4px solid var(--accent); cursor: pointer; }
+
+    .seg { display: inline-flex; background: rgba(0,0,0,.3); border: 1px solid var(--line); border-radius: 12px; padding: 4px; }
+    .seg input { display: none; }
+    .seg label { padding: 8px 18px; border-radius: 9px; cursor: pointer; color: var(--muted); font-weight: 700; transition: .2s; }
+    .seg input:checked + label { background: linear-gradient(90deg, var(--accent), #5b8cff); color: #fff; box-shadow: 0 6px 20px rgba(124,92,255,.4); }
+
+    .result { position: sticky; top: 20px; }
+    .price-label { color: var(--muted); font-size: 13px; }
+    .price { font: 800 clamp(48px, 7vw, 72px)/1 "Inter", sans-serif; margin: 8px 0 6px; letter-spacing: -.02em;
+      background: linear-gradient(90deg, #fff, #c9d6ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .delta { display: inline-block; font-weight: 700; font-size: 13px; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,.08); }
+    .delta.up { color: var(--plus); background: rgba(52,211,153,.12); }
+    .delta.down { color: var(--minus); background: rgba(251,113,133,.12); }
+    .bars { margin-top: 24px; display: grid; gap: 10px; }
+    .bar { display: grid; grid-template-columns: 7.5em 1fr 4.2em; align-items: center; gap: 10px; font-size: 13px; }
+    .bar .track { position: relative; height: 10px; background: rgba(255,255,255,.06); border-radius: 999px; }
+    .bar .track::before { content: ""; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 1px; background: var(--line); }
+    .bar .fill { position: absolute; top: 0; bottom: 0; border-radius: 999px; transition: all .35s cubic-bezier(.2,.8,.2,1); }
+    .bar .fill.plus { left: 50%; background: linear-gradient(90deg, rgba(52,211,153,.5), var(--plus)); }
+    .bar .fill.minus { right: 50%; background: linear-gradient(270deg, rgba(251,113,133,.5), var(--minus)); }
+    .bar .v { text-align: right; font-family: "Inter", sans-serif; font-weight: 600; }
+    .note { color: var(--muted); font-size: 12px; margin-top: 14px; line-height: 1.7; }
+    .btn { margin-top: 20px; width: 100%; border: 0; border-radius: 14px; padding: 15px; font: 800 16px "Noto Sans JP", sans-serif; color: #fff; cursor: pointer;
+      background: linear-gradient(90deg, var(--accent), var(--accent2)); box-shadow: 0 12px 30px rgba(124,92,255,.45); transition: transform .15s; }
+    .btn:hover { transform: translateY(-2px); }
+    .live { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--plus); float: right; }
+    .live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--plus); box-shadow: 0 0 0 0 rgba(52,211,153,.7); animation: pulse 1.6s infinite; }
+    @keyframes pulse { 70% { box-shadow: 0 0 0 10px rgba(52,211,153,0); } 100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); } }
+    footer { color: var(--muted); font-size: 12px; text-align: center; margin-top: 36px; }
+    footer code { color: var(--accent2); }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="tag">● FastAPI × scikit-learn × AWS EC2</span>
+    <h1>物件の<span>適正価格</span>を、AIが即座に予測。</h1>
+    <p>5つの条件を動かすと、その場で予測が変わります。どの条件が価格を押し上げ／押し下げているかも見えます。</p>
+  </header>
+
+  <!-- name 属性は main.py の引数名とそろえる。JavaScript が動かなくても、送信すれば結果ページで予測できる -->
+  <form class="grid" action="predict_price/" method="get" id="form">
+    <section class="card">
+      <h2>CONDITIONS ／ 物件の条件</h2>
+
+      <div class="field">
+        <div class="top">
+          <label for="station_dist"><span class="icon">🚉</span>最も近い駅からの距離</label>
+          <div class="num"><input type="number" id="station_dist" name="station_dist" value="800" min="0" step="10"><small>m</small></div>
+        </div>
+        <input type="range" data-for="station_dist" min="0" max="6500" step="10" value="800" aria-label="駅からの距離">
+      </div>
+
+      <div class="field">
+        <div class="top">
+          <label for="conveni_num"><span class="icon">🏪</span>徒歩10分圏内のコンビニ</label>
+          <div class="num"><input type="number" id="conveni_num" name="conveni_num" value="4" min="0" step="1"><small>店</small></div>
+        </div>
+        <input type="range" data-for="conveni_num" min="0" max="10" step="1" value="4" aria-label="コンビニの数">
+      </div>
+
+      <div class="field">
+        <div class="top">
+          <label for="milk_consum"><span class="icon">🥛</span>家庭内の牛乳の消費量</label>
+          <div class="num"><input type="number" id="milk_consum" name="milk_consum" value="3.5" step="0.1"><small></small></div>
+        </div>
+        <input type="range" data-for="milk_consum" min="0" max="12" step="0.1" value="3.5" aria-label="牛乳の消費量">
+        <div class="hint">相関はあっても、価格の原因とは限らない特徴量です</div>
+      </div>
+
+      <div class="field">
+        <div class="top">
+          <label for="income"><span class="icon">💴</span>世帯主の年収</label>
+          <div class="num"><input type="number" id="income" name="income" value="27000" step="100"><small></small></div>
+        </div>
+        <input type="range" data-for="income" min="0" max="80000" step="100" value="27000" aria-label="世帯主の年収">
+      </div>
+
+      <div class="field">
+        <div class="top">
+          <label><span class="icon">🏙️</span>エリア</label>
+          <div class="seg">
+            <input type="radio" name="city_flag" id="city0" value="0"><label for="city0">郊外</label>
+            <input type="radio" name="city_flag" id="city1" value="1" checked><label for="city1">都市部</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="card result" aria-live="polite">
+      <h2>PREDICTION ／ 予測結果 <span class="live" id="live">LIVE</span></h2>
+      <div class="price-label">坪あたり価格の予測値</div>
+      <div class="price" id="price">--</div>
+      <span class="delta" id="delta">計算しています…</span>
+
+      <div class="bars" id="bars"></div>
+      <div class="note">
+        棒は「その条件が予測をどれだけ動かしたか」（係数 × 標準化した値）。右（緑）は価格を上げ、左（赤）は下げる方向です。<br>
+        <span id="formula"></span>
+      </div>
+      <button class="btn" type="submit">結果ページで見る →</button>
+    </aside>
+  </form>
+
+  <footer>モデル：SGDRegressor（Day8）／ API：<code>GET /api/predict</code> ／ 画面：Jinja2 テンプレート</footer>
+</div>
+
+<script>
+  const $ = (s) => document.querySelector(s);
+  const form = $("#form");
+  const fmt = (v, d = 2) => Number(v).toLocaleString("ja-JP", { minimumFractionDigits: d, maximumFractionDigits: d });
+  let baseline = null, shown = 0, timer = null;
+
+  // スライダーと数値入力を同期させる
+  document.querySelectorAll("input[type=range]").forEach((r) => {
+    const box = document.getElementById(r.dataset.for);
+    const paint = () => r.style.setProperty("--p", ((r.value - r.min) / (r.max - r.min)) * 100 + "%");
+    r.addEventListener("input", () => { box.value = r.value; paint(); schedule(); });
+    box.addEventListener("input", () => { r.value = box.value; paint(); schedule(); });
+    paint();
+  });
+  document.querySelectorAll("input[name=city_flag]").forEach((el) => el.addEventListener("change", schedule));
+
+  function params() { return new URLSearchParams(new FormData(form)).toString(); }
+
+  async function ask(qs) {
+    const res = await fetch("api/predict?" + qs);
+    if (!res.ok) throw new Error(res.status);
+    return res.json();
+  }
+
+  // 数字をなめらかに変える
+  function animate(to) {
+    const from = shown, t0 = performance.now(), dur = 450;
+    const step = (t) => {
+      const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      shown = from + (to - from) * e;
+      $("#price").textContent = fmt(shown);
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  function render(d) {
+    animate(d.predicted_price);
+    if (baseline !== null) {
+      const diff = d.predicted_price - baseline, el = $("#delta");
+      el.className = "delta " + (diff > 0.005 ? "up" : diff < -0.005 ? "down" : "");
+      el.textContent = (diff >= 0 ? "▲ +" : "▼ ") + fmt(diff) + "（最初の条件と比べて）";
+    }
+    const max = Math.max(...d.contributions.map((c) => Math.abs(c.value)), 1e-9);
+    $("#bars").innerHTML = d.contributions.map((c) => {
+      const w = (Math.abs(c.value) / max) * 50;
+      return `<div class="bar"><span>${c.label}</span><div class="track"><div class="fill ${c.value >= 0 ? "plus" : "minus"}" style="width:${w}%"></div></div><span class="v">${c.value >= 0 ? "+" : ""}${fmt(c.value)}</span></div>`;
+    }).join("");
+    const sum = d.contributions.reduce((a, c) => a + c.value, 0);
+    $("#formula").textContent = `切片 ${fmt(d.intercept)} ＋ 棒の合計 ${fmt(sum)} ＝ ${fmt(d.predicted_price)}`;
+  }
+
+  function schedule() {
+    clearTimeout(timer);
+    timer = setTimeout(async () => {
+      try { render(await ask(params())); $("#live").style.visibility = "visible"; }
+      catch (e) { $("#live").style.visibility = "hidden"; }
+    }, 120);
+  }
+
+  (async () => {
+    try {
+      const d = await ask(params());
+      baseline = d.predicted_price; render(d);
+      $("#delta").textContent = "条件を動かしてみてください";
+    } catch (e) {
+      $("#price").textContent = "--";
+      $("#delta").textContent = "API に接続できません（送信ボタンは使えます）";
+    }
+  })();
+</script>
+</body>
 </html>

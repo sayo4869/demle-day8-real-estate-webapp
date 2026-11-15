@@ -1,11 +1,71 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <title>不動産価格予測結果</title>
-  </head>
-  <body>
-    <p>適正価格は {{ predicted_price }} です</p>
-    <p><a href="/">もう一度入力する</a></p>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>予測結果 | Real Estate Price AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #0b1020; --bg2: #121a33; --card: rgba(255,255,255,.06); --line: rgba(255,255,255,.12);
+      --text: #e8ecf8; --muted: #9aa5c4; --accent: #7c5cff; --accent2: #22d3ee; --plus: #34d399; --minus: #fb7185; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; color: var(--text); font-family: "Inter", "Noto Sans JP", system-ui, sans-serif;
+      background: radial-gradient(900px 500px at 50% -10%, rgba(124,92,255,.38), transparent 60%), linear-gradient(180deg, var(--bg), var(--bg2)); }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 48px 20px 60px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 32px;
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 20px 60px rgba(0,0,0,.35); animation: rise .6s cubic-bezier(.2,.8,.2,1); }
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .tag { font-size: 12px; letter-spacing: .1em; color: var(--accent2); }
+    .label { color: var(--muted); margin-top: 18px; }
+    .price { font: 800 clamp(56px, 12vw, 96px)/1.05 "Inter", sans-serif; letter-spacing: -.03em; margin: 6px 0 4px;
+      background: linear-gradient(90deg, #fff, #c9d6ff 60%, var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .sub { color: var(--muted); font-size: 14px; }
+    h2 { font-size: 13px; letter-spacing: .1em; color: var(--muted); margin: 32px 0 12px; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    td { padding: 10px 4px; border-bottom: 1px dashed var(--line); }
+    td:last-child { text-align: right; font-family: "Inter", sans-serif; font-weight: 600; }
+    .bar { display: grid; grid-template-columns: 7.5em 1fr 4.5em; gap: 10px; align-items: center; font-size: 13px; margin: 8px 0; }
+    .track { position: relative; height: 10px; background: rgba(255,255,255,.06); border-radius: 999px; }
+    .track::before { content: ""; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 1px; background: var(--line); }
+    .fill { position: absolute; top: 0; bottom: 0; border-radius: 999px; }
+    .fill.plus { left: 50%; background: linear-gradient(90deg, rgba(52,211,153,.5), var(--plus)); }
+    .fill.minus { right: 50%; background: linear-gradient(270deg, rgba(251,113,133,.5), var(--minus)); }
+    .v { text-align: right; font-family: "Inter", sans-serif; font-weight: 600; }
+    .btn { display: block; text-align: center; margin-top: 28px; border-radius: 14px; padding: 15px; font-weight: 800; color: #fff; text-decoration: none;
+      background: linear-gradient(90deg, var(--accent), var(--accent2)); box-shadow: 0 12px 30px rgba(124,92,255,.45); }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="tag">PREDICTION RESULT</div>
+    <div class="label">この物件の坪あたり価格の予測値</div>
+    <div class="price">{{ "%.2f"|format(predicted_price) }}</div>
+    <div class="sub">適正価格は {{ predicted_price }} です（SGDRegressor による予測）</div>
+
+    <h2>INPUT ／ 入力した条件</h2>
+    <table>
+      <tr><td>🚉 最も近い駅からの距離</td><td>{{ "{:,.0f}".format(inputs.station_dist) }} m</td></tr>
+      <tr><td>🏪 徒歩10分圏内のコンビニ</td><td>{{ inputs.conveni_num|int }} 店</td></tr>
+      <tr><td>🥛 家庭内の牛乳の消費量</td><td>{{ "%.1f"|format(inputs.milk_consum) }}</td></tr>
+      <tr><td>💴 世帯主の年収</td><td>{{ "{:,.0f}".format(inputs.income) }}</td></tr>
+      <tr><td>🏙️ エリア</td><td>{{ "都市部" if inputs.city_flag == 1 else "郊外" }}</td></tr>
+    </table>
+
+    <h2>WHY ／ 予測を動かした条件</h2>
+    {% set mx = contrib|map(attribute="value")|map("abs")|max %}
+    {% for c in contrib %}
+    <div class="bar">
+      <span>{{ c.label }}</span>
+      <div class="track"><div class="fill {{ 'plus' if c.value >= 0 else 'minus' }}" style="width: {{ (c.value|abs / mx * 50) if mx > 0 else 0 }}%"></div></div>
+      <span class="v">{{ "%+.2f"|format(c.value) }}</span>
+    </div>
+    {% endfor %}
+    <div class="sub" style="margin-top:10px">切片 {{ "%.2f"|format(intercept) }} ＋ 上の合計 ＝ 予測値</div>
+
+    <a class="btn" href="/">← 条件を変えてもう一度</a>
+  </div>
+</div>
+</body>
 </html>
