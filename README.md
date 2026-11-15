@@ -13,6 +13,10 @@
 > # すでに clone してある人は： git switch rich-ui
 > ```
 >
+> ![入力画面（スライダーを動かすと右の予測がその場で変わる）](docs/rich-ui-index.png)
+> ![結果ページ](docs/rich-ui-result.png)
+> <img src="docs/rich-ui-mobile.png" alt="スマホ幅での表示" width="480">
+>
 > 棒グラフの値は「係数 × 標準化した値」です。線形モデル（SGDRegressor）なので、**切片 ＋ 棒の合計 ＝ 予測値** になります。
 > JavaScript が動かない環境でも、「結果ページで見る」ボタンで従来どおり予測できます。
 
