@@ -1,5 +1,42 @@
 # demle-day8-real-estate-webapp
 
+> 🔁 **このブランチ（`online-learning`）は、オンライン学習を Web アプリに組み込んだ版です。**
+> Day8 の宿題では「Colab で `partial_fit` → pickle を送る → サーバーを再起動」でしたが、この版では **ブラウザから追加データの CSV を送るだけ**で、モデルが更新されます。
+>
+> ![オンライン学習の画面](docs/online-learning.png)
+>
+> | しくみ | 中身 |
+> |---|---|
+> | 学習 | 追加データを 8:2 に分け、8割で `partial_fit`（scaler は最初のものをそのまま使う） |
+> | 採用するか決める | 更新前と更新後のモデルを、①追加データの残り2割 ②**基準データ**（元のテストデータ＋これまでの確認用データ）の両方で比べ、**どちらも悪くならなかったときだけ採用**。でたらめなデータを送っても、②で弾かれる |
+> | 再起動いらず | 採用したモデルは、次のリクエストからすぐ使われる（`threading.Lock` で入れ替え中の予測を守る） |
+> | 版の管理 | `models/model_v001.pickle` … と番号付きで保存、履歴は `models/history.json`。「1つ前の版に戻す」ボタンあり |
+> | 安全 | 学習・巻き戻しは、起動時に決めた `ADMIN_TOKEN` をヘッダー `X-API-Key` で送った人だけ。CSV は 2MB・2万行まで |
+>
+> **起動のしかた**（`--reload` は付けない：学習でファイルが変わるたびに再起動してしまうため）
+>
+> ```bash
+> # Mac / Git Bash
+> ADMIN_TOKEN='長くて推測されにくい文字列' python -m uvicorn main:app --port 8080
+> ```
+>
+> ```powershell
+> # PowerShell
+> $env:ADMIN_TOKEN = '長くて推測されにくい文字列'; python -m uvicorn main:app --port 8080
+> ```
+>
+> `http://127.0.0.1:8080/learn` を開き、キーと CSV（講座の `dataset_real_estate_add.csv` をそのまま使える）を入れて「学習する」。
+> コマンドで送るなら：
+>
+> ```bash
+> curl -X POST -H "X-API-Key: 長くて推測されにくい文字列" -F "file=@data/dataset_real_estate_add.csv" http://127.0.0.1:8080/api/learn
+> curl http://127.0.0.1:8080/api/model          # 今の版と履歴
+> ```
+>
+> ⚠️ EC2 で公開するときは、`http://` のままだとキーが暗号化されずに流れます。HTTPS（Nginx ＋ Let's Encrypt など）にするか、学習は SSH の中から `curl http://127.0.0.1:8080/...` で行ってください。
+> 依存に `python-multipart`（ファイルのアップロードを受け取るため）を追加しています。
+
+
 **不動産価格を予測する機械学習モデルを、FastAPI の Web アプリにして Amazon EC2 にデプロイする**練習用のコードです。
 データミックス DEMLE Day8「【実践編】不動産価格の予測モデルをデプロイしよう」の復習用に、自分で書き直しました。
 
