@@ -1,5 +1,8 @@
-fastapi>=0.110
-uvicorn[standard]>=0.27
-jinja2>=3.1
-scikit-learn>=1.3
-pandas>=1.5
+# バージョンを固定しています（手元：Python 3.11 の仮想環境／EC2：Python 3.9 で動作確認済み）
+# Colab で学習するときも scikit-learn==1.6.1 にそろえると、pickle を安全に読み込めます
+fastapi==0.128.8
+uvicorn[standard]==0.39.0
+jinja2==3.1.6
+scikit-learn==1.6.1
+numpy==2.0.2
+pandas==2.3.3

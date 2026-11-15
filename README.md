@@ -57,15 +57,37 @@ demle-day8-real-estate-webapp/
 
 ## 手順1. clone と仮想環境（手元のPC）
 
+PCの Python が新しすぎる（3.13・3.14 など）と、固定したバージョンの numpy・scikit-learn がインストールできないことがあります。
+そこで [uv](https://docs.astral.sh/uv/) で **Python 3.11 の仮想環境**を作ります（PCに 3.11 がなくても uv が自動でダウンロードします）。
+
+| どこ | Python | パッケージ |
+|---|---|---|
+| 手元のPC | 3.11（uv の `.venv`） | `requirements.txt`（バージョン固定） |
+| EC2 | 3.9（Amazon Linux 2023 標準・仮想環境なし） | `requirements.txt`（同じ番号） |
+| Colab（使う場合） | Colab のまま | `!pip install -q scikit-learn==1.6.1` だけそろえる |
+
+**uv を入れる（1回だけ）**
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh     # Mac / Git Bash（Mac は brew install uv でも可）
+```
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"   # Windows PowerShell
+```
+
+入れたらターミナルを開き直して `uv --version` で確認します。
+
 **Mac（ターミナル）**
 
 ```bash
 cd ~
 git clone https://github.com/sayo4869/demle-day8-real-estate-webapp.git
 cd demle-day8-real-estate-webapp
-python3 -m venv .venv
+uv venv --python 3.11          # .python-version があるので uv venv だけでも 3.11 になる
 source .venv/bin/activate
-pip install -r requirements.txt
+python --version               # Python 3.11.x
+uv pip install -r requirements.txt
 ```
 
 **Windows（Git Bash）**
@@ -74,9 +96,10 @@ pip install -r requirements.txt
 cd ~
 git clone https://github.com/sayo4869/demle-day8-real-estate-webapp.git
 cd demle-day8-real-estate-webapp
-python -m venv .venv
+uv venv --python 3.11
 source .venv/Scripts/activate
-pip install -r requirements.txt
+python --version
+uv pip install -r requirements.txt
 ```
 
 **Windows（PowerShell）**
@@ -85,10 +108,13 @@ pip install -r requirements.txt
 cd ~
 git clone https://github.com/sayo4869/demle-day8-real-estate-webapp.git
 cd demle-day8-real-estate-webapp
-python -m venv .venv
+uv venv --python 3.11
 .\.venv\Scripts\Activate.ps1          # エラーが出たら Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
-pip install -r requirements.txt
+python --version
+uv pip install -r requirements.txt
 ```
+
+> uv の仮想環境には `pip` が入っていないので、`pip install` ではなく `uv pip install` を使います。
 
 ## 手順2. 配布データを置いて、モデルを学習する（手元のPC）
 
