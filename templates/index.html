@@ -260,7 +260,7 @@
         <div class="bars-title">価格に影響している条件</div>
         <div class="bars" id="bars"></div>
         <div class="note">
-          棒は「その条件が予測をどれだけ動かしたか」（係数 × 標準化した値）です。右（緑）は価格を上げる方向、左（赤）は下げる方向。<br>
+          棒は「その条件が予測をどれだけ動かしたか」（木をたどったときの各分岐での変化を項目ごとに合計した値）です。右（緑）は価格を上げる方向、左（赤）は下げる方向。<br>
           <span id="formula"></span>
         </div>
         <button class="btn" type="submit">査定結果レポートを見る →</button>
@@ -292,7 +292,7 @@
       <p>データミックスの授業（Day8）で作ったモデルとアプリで動いています。</p>
     </div>
     <div class="tech">
-      <div><b>scikit-learn</b><span>SGDRegressor で価格を予測する線形回帰モデル</span></div>
+      <div><b>scikit-learn</b><span>100本の決定木の平均で価格を予測するランダムフォレスト</span></div>
       <div><b>FastAPI</b><span>予測を返す API と、この画面を配信</span></div>
       <div><b>Amazon EC2</b><span>インターネットに公開しているサーバー</span></div>
       <div><b>Terraform</b><span>サーバーの構築をコードで自動化</span></div>
@@ -304,7 +304,7 @@
   <div class="wrap">
     <div class="cols">
       <a class="logo" href="./"><svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="9" fill="#24497f"/><path d="M8 21 L20 10 L32 21" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 30 L18 25 L22 28 L29 21" fill="none" stroke="#3cc4bd" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>ソラノ不動産</b><small>SORANO ESTATE · DEMO</small></span></a>
-      <div>モデル：SGDRegressor ／ API：<code>GET /api/predict</code> ／ 画面：Jinja2 テンプレート</div>
+      <div>モデル：RandomForestRegressor ／ API：<code>GET /api/predict</code> ／ 画面：Jinja2 テンプレート</div>
     </div>
     <div class="disclaimer">このサイトは機械学習の授業のために作ったデモです。「ソラノ不動産」は架空の会社で、実在の会社・団体とは関係ありません。表示される価格は学習用データにもとづく予測値で、実際の取引価格を保証するものではありません。</div>
   </div>
@@ -359,7 +359,7 @@
       return `<div class="bar"><span>${c.label}</span><div class="track"><div class="fill ${c.value >= 0 ? "plus" : "minus"}" style="width:${w}%"></div></div><span class="v">${c.value >= 0 ? "+" : ""}${fmt(c.value)}</span></div>`;
     }).join("");
     const sum = d.contributions.reduce((a, c) => a + c.value, 0);
-    $("#formula").textContent = `切片 ${fmt(d.intercept)} ＋ 棒の合計 ${fmt(sum)} ＝ ${fmt(d.predicted_price)}`;
+    $("#formula").textContent = `平均 ${fmt(d.intercept)} ＋ 棒の合計 ${fmt(sum)} ＝ ${fmt(d.predicted_price)}`;
   }
 
   function schedule() {

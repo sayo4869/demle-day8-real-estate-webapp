@@ -1,5 +1,27 @@
 # demle-day8-real-estate-webapp
 
+> 🌲 **このブランチ（`random-forest`）は、モデルをランダムフォレスト（`RandomForestRegressor`）に差し替えた版です。** 画面は `corporate-ui` と同じです。
+>
+> | | `main` / `rich-ui` / `corporate-ui` | `random-forest` |
+> |---|---|---|
+> | モデル | `SGDRegressor`（線形回帰） | `RandomForestRegressor`（決定木100本の平均、`max_depth=7`） |
+> | 使う pickle | `model.pickle` ＋ `scaler.pickle` | **`model_v2.pickle` だけ** |
+> | 標準化 | 必要（係数の大きさが値の単位に左右されるため） | **不要**（木は「年収が ○○ 以上か」のようにしきい値で分けるだけなので、単位が違っても結果が変わらない） |
+> | 棒グラフ | 係数 × 標準化した値（切片 ＋ 合計 ＝ 予測値） | 木をたどったときの各分岐での変化を項目ごとに合計（学習データの平均 ＋ 合計 ＝ 予測値） |
+> | 学習 | `python train.py` | `python train_v2.py`（Colab で作った `model_v2.pickle` を置いてもOK） |
+>
+> ```bash
+> git clone -b random-forest https://github.com/sayo4869/demle-day8-real-estate-webapp.git webapp-rf
+> # すでに clone してある人は： git switch random-forest
+> python train_v2.py      # → model_v2.pickle（私の環境：学習 553 件 / テスト 139 件  MSE = 65.13）
+> python -m uvicorn main:app --reload --port 8080
+> ```
+>
+> - `model_v2.pickle` も `.gitignore` の `*.pickle` に含まれるので、コミットされません。
+> - Colab で学習するときは、**DataFrame（列名 `X3, X4, X8, X9, X10`）のまま `fit`** してください。`main.py` も同じ列名の DataFrame で予測します。
+> - ランダムフォレストには `partial_fit` がないので、`online_update.py`（オンライン学習）はこのブランチでは使えません。追加データを入れて学習し直してください。
+> - EC2 では、`scp` で送るファイルが `model_v2.pickle` 1つになります。
+
 > 🏢 **このブランチ（`corporate-ui`）は、白背景の「会社のサイト風」にした版です。** 機能は `rich-ui` ブランチと同じ（スライダーで動かすとその場で予測が変わる・寄与の棒グラフ）で、`templates/` のデザインだけが違います。
 > 「ソラノ不動産」は授業用の**架空の会社**です。ロゴ・イラストもこのために作ったもので、実在の会社・団体とは関係ありません。
 >
@@ -291,6 +313,7 @@ pkill -f uvicorn        # 止めるとき
 | 症状 | 原因と対処 |
 |---|---|
 | 起動すると「model.pickle / scaler.pickle がありません」 | 先に `python train.py`（EC2では `python3 train.py`） |
+| 起動すると「model_v2.pickle がありません」（random-forest） | 先に `python train_v2.py`、または Colab で作った `model_v2.pickle` を置く |
 | `train.py` が「data/dataset_real_estate.csv がありません」 | 手順2（手元）／手順5-3（EC2へのscp）でCSVを置く |
 | `scp: … No such file or directory` | EC2側で先に `git clone` してフォルダを作っておく／手元でレポジトリのフォルダに `cd` してから実行 |
 | コンビニの数を変えても予測が変わらない | 講座版のテンプレートを使っている（`convini_num`）。このレポジトリの `templates/index.html` を使う |

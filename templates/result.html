@@ -63,7 +63,7 @@
     <div class="card">
       <div class="head">
         <div><div class="en">ESTIMATE REPORT</div><h1>査定結果レポート</h1></div>
-        <div class="date">SGDRegressor による予測</div>
+        <div class="date">RandomForestRegressor による予測</div>
       </div>
 
       <div class="price-box">
@@ -90,7 +90,7 @@
         <span class="v">{{ "%+.2f"|format(c.value) }}</span>
       </div>
       {% endfor %}
-      <div class="note">右（緑）は価格を上げる方向、左（赤）は下げる方向。切片 {{ "%.2f"|format(intercept) }} ＋ 上の合計 ＝ 予測値</div>
+      <div class="note">右（緑）は価格を上げる方向、左（赤）は下げる方向。学習データの平均 {{ "%.2f"|format(intercept) }} ＋ 上の合計 ＝ 予測値</div>
 
       <a class="btn" href="/">← 条件を変えてもう一度査定する</a>
     </div>
