@@ -3,69 +3,99 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>予測結果 | Real Estate Price AI</title>
+  <title>査定結果レポート | ソラノ不動産（デモ）</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
-    :root { --bg: #0b1020; --bg2: #121a33; --card: rgba(255,255,255,.06); --line: rgba(255,255,255,.12);
-      --text: #e8ecf8; --muted: #9aa5c4; --accent: #7c5cff; --accent2: #22d3ee; --plus: #34d399; --minus: #fb7185; }
+    :root { --navy: #17325c; --teal: #0e8f8a; --teal-soft: #e6f4f3; --orange: #e4782f;
+      --text: #1d2733; --muted: #5f6b7a; --line: #e3e8ee; --soft: #f5f7fa; --plus: #0e8f8a; --minus: #d0563b; }
     * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; color: var(--text); font-family: "Inter", "Noto Sans JP", system-ui, sans-serif;
-      background: radial-gradient(900px 500px at 50% -10%, rgba(124,92,255,.38), transparent 60%), linear-gradient(180deg, var(--bg), var(--bg2)); }
-    .wrap { max-width: 720px; margin: 0 auto; padding: 48px 20px 60px; }
-    .card { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 32px;
-      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 20px 60px rgba(0,0,0,.35); animation: rise .6s cubic-bezier(.2,.8,.2,1); }
-    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-    .tag { font-size: 12px; letter-spacing: .1em; color: var(--accent2); }
-    .label { color: var(--muted); margin-top: 18px; }
-    .price { font: 800 clamp(56px, 12vw, 96px)/1.05 "Inter", sans-serif; letter-spacing: -.03em; margin: 6px 0 4px;
-      background: linear-gradient(90deg, #fff, #c9d6ff 60%, var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .sub { color: var(--muted); font-size: 14px; }
-    h2 { font-size: 13px; letter-spacing: .1em; color: var(--muted); margin: 32px 0 12px; font-weight: 600; }
-    table { width: 100%; border-collapse: collapse; font-size: 15px; }
-    td { padding: 10px 4px; border-bottom: 1px dashed var(--line); }
-    td:last-child { text-align: right; font-family: "Inter", sans-serif; font-weight: 600; }
-    .bar { display: grid; grid-template-columns: 7.5em 1fr 4.5em; gap: 10px; align-items: center; font-size: 13px; margin: 8px 0; }
-    .track { position: relative; height: 10px; background: rgba(255,255,255,.06); border-radius: 999px; }
-    .track::before { content: ""; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 1px; background: var(--line); }
+    body { margin: 0; background: var(--soft); color: var(--text); font-family: "Noto Sans JP", system-ui, sans-serif; line-height: 1.7; }
+    header.site { background: #fff; border-bottom: 1px solid var(--line); }
+    header.site .wrap, .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+    header.site .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+    .logo b { font-size: 18px; color: var(--navy); letter-spacing: .04em; }
+    .logo small { display: block; font-size: 10px; color: var(--muted); letter-spacing: .12em; line-height: 1; }
+    .badge { font-size: 12px; color: var(--muted); }
+    main { padding: 36px 0 56px; }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 32px; box-shadow: 0 8px 24px rgba(23,50,92,.06); }
+    @media (max-width: 520px) { .card { padding: 20px; } }
+    .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; border-bottom: 2px solid var(--navy); padding-bottom: 14px; }
+    .head h1 { margin: 0; font-size: 22px; color: var(--navy); }
+    .head .en { font: 700 11px "Inter", sans-serif; letter-spacing: .2em; color: var(--teal); }
+    .head .date { font-size: 12px; color: var(--muted); }
+    .price-box { margin: 24px 0 8px; background: var(--teal-soft); border-radius: 10px; padding: 20px 24px; }
+    .price-box .label { font-size: 13px; color: var(--muted); }
+    .price { font: 800 clamp(44px, 10vw, 64px)/1.1 "Inter", sans-serif; color: var(--navy); letter-spacing: -.02em; }
+    .price-box .sub { font-size: 13px; color: var(--muted); }
+    h2 { font-size: 15px; color: var(--navy); margin: 30px 0 10px; padding-left: 10px; border-left: 4px solid var(--teal); }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 11px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+    th { width: 55%; font-weight: 500; color: var(--muted); background: var(--soft); }
+    td { text-align: right; font-family: "Inter", "Noto Sans JP", sans-serif; font-weight: 700; }
+    .bar { display: grid; grid-template-columns: 7.5em 1fr 4.5em; gap: 10px; align-items: center; font-size: 13px; margin: 9px 0; }
+    .track { position: relative; height: 8px; background: #edf1f5; border-radius: 999px; }
+    .track::before { content: ""; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 1px; background: #b8c3cf; }
     .fill { position: absolute; top: 0; bottom: 0; border-radius: 999px; }
-    .fill.plus { left: 50%; background: linear-gradient(90deg, rgba(52,211,153,.5), var(--plus)); }
-    .fill.minus { right: 50%; background: linear-gradient(270deg, rgba(251,113,133,.5), var(--minus)); }
-    .v { text-align: right; font-family: "Inter", sans-serif; font-weight: 600; }
-    .btn { display: block; text-align: center; margin-top: 28px; border-radius: 14px; padding: 15px; font-weight: 800; color: #fff; text-decoration: none;
-      background: linear-gradient(90deg, var(--accent), var(--accent2)); box-shadow: 0 12px 30px rgba(124,92,255,.45); }
+    .fill.plus { left: 50%; background: var(--plus); }
+    .fill.minus { right: 50%; background: var(--minus); }
+    .v { text-align: right; font-family: "Inter", sans-serif; font-weight: 700; }
+    .note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+    .btn { display: block; text-align: center; margin-top: 28px; border-radius: 8px; padding: 15px; font-weight: 700; color: #fff; text-decoration: none;
+      background: var(--orange); box-shadow: 0 6px 16px rgba(228,120,47,.28); }
+    footer { text-align: center; font-size: 12px; color: var(--muted); padding: 0 20px 32px; }
   </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="card">
-    <div class="tag">PREDICTION RESULT</div>
-    <div class="label">この物件の坪あたり価格の予測値</div>
-    <div class="price">{{ "%.2f"|format(predicted_price) }}</div>
-    <div class="sub">適正価格は {{ predicted_price }} です（SGDRegressor による予測）</div>
-
-    <h2>INPUT ／ 入力した条件</h2>
-    <table>
-      <tr><td>🚉 最も近い駅からの距離</td><td>{{ "{:,.0f}".format(inputs.station_dist) }} m</td></tr>
-      <tr><td>🏪 徒歩10分圏内のコンビニ</td><td>{{ inputs.conveni_num|int }} 店</td></tr>
-      <tr><td>🥛 家庭内の牛乳の消費量</td><td>{{ "%.1f"|format(inputs.milk_consum) }}</td></tr>
-      <tr><td>💴 世帯主の年収</td><td>{{ "{:,.0f}".format(inputs.income) }}</td></tr>
-      <tr><td>🏙️ エリア</td><td>{{ "都市部" if inputs.city_flag == 1 else "郊外" }}</td></tr>
-    </table>
-
-    <h2>WHY ／ 予測を動かした条件</h2>
-    {% set mx = contrib|map(attribute="value")|map("abs")|max %}
-    {% for c in contrib %}
-    <div class="bar">
-      <span>{{ c.label }}</span>
-      <div class="track"><div class="fill {{ 'plus' if c.value >= 0 else 'minus' }}" style="width: {{ (c.value|abs / mx * 50) if mx > 0 else 0 }}%"></div></div>
-      <span class="v">{{ "%+.2f"|format(c.value) }}</span>
-    </div>
-    {% endfor %}
-    <div class="sub" style="margin-top:10px">切片 {{ "%.2f"|format(intercept) }} ＋ 上の合計 ＝ 予測値</div>
-
-    <a class="btn" href="/">← 条件を変えてもう一度</a>
+<header class="site">
+  <div class="wrap">
+    <a class="logo" href="/">
+      <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="9" fill="#17325c"/><path d="M8 21 L20 10 L32 21" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 30 L18 25 L22 28 L29 21" fill="none" stroke="#3cc4bd" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span><b>ソラノ不動産</b><small>SORANO ESTATE · DEMO</small></span>
+    </a>
+    <span class="badge">AI価格査定</span>
   </div>
-</div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="card">
+      <div class="head">
+        <div><div class="en">ESTIMATE REPORT</div><h1>査定結果レポート</h1></div>
+        <div class="date">SGDRegressor による予測</div>
+      </div>
+
+      <div class="price-box">
+        <div class="label">この物件の坪あたり価格の予測値</div>
+        <div class="price">{{ "%.2f"|format(predicted_price) }}</div>
+        <div class="sub">適正価格は {{ predicted_price }} です</div>
+      </div>
+
+      <h2>入力した条件</h2>
+      <table>
+        <tr><th>最も近い駅からの距離</th><td>{{ "{:,.0f}".format(inputs.station_dist) }} m</td></tr>
+        <tr><th>徒歩10分圏内のコンビニ</th><td>{{ inputs.conveni_num|int }} 店</td></tr>
+        <tr><th>家庭内の牛乳の消費量</th><td>{{ "%.1f"|format(inputs.milk_consum) }}</td></tr>
+        <tr><th>世帯主の年収</th><td>{{ "{:,.0f}".format(inputs.income) }}</td></tr>
+        <tr><th>エリア</th><td>{{ "都市部" if inputs.city_flag == 1 else "郊外" }}</td></tr>
+      </table>
+
+      <h2>価格に影響した条件</h2>
+      {% set mx = contrib|map(attribute="value")|map("abs")|max %}
+      {% for c in contrib %}
+      <div class="bar">
+        <span>{{ c.label }}</span>
+        <div class="track"><div class="fill {{ 'plus' if c.value >= 0 else 'minus' }}" style="width: {{ (c.value|abs / mx * 50) if mx > 0 else 0 }}%"></div></div>
+        <span class="v">{{ "%+.2f"|format(c.value) }}</span>
+      </div>
+      {% endfor %}
+      <div class="note">右（緑）は価格を上げる方向、左（赤）は下げる方向。切片 {{ "%.2f"|format(intercept) }} ＋ 上の合計 ＝ 予測値</div>
+
+      <a class="btn" href="/">← 条件を変えてもう一度査定する</a>
+    </div>
+  </div>
+</main>
+<footer>このサイトは授業用のデモです。「ソラノ不動産」は架空の会社で、実在の会社・団体とは関係ありません。</footer>
 </body>
 </html>

@@ -23,3 +23,12 @@ data/*.zip
 *.pickle
 *.pkl
 *.joblib
+
+# --- Terraform（terraform ブランチのフォルダが残っていても入らないように） ---
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+tfplan
+*.tfplan

@@ -1,21 +1,22 @@
 # demle-day8-real-estate-webapp
 
-> 🎨 **このブランチ（`rich-ui`）は、画面を作り込んだ版です。** モデル・URL・pickle の置き方は `main` ブランチと同じで、`templates/` と `main.py` だけが違います。
+> 🏢 **このブランチ（`corporate-ui`）は、白背景の「会社のサイト風」にした版です。** 機能は `rich-ui` ブランチと同じ（スライダーで動かすとその場で予測が変わる・寄与の棒グラフ）で、`templates/` のデザインだけが違います。
+> 「ソラノ不動産」は授業用の**架空の会社**です。ロゴ・イラストもこのために作ったもので、実在の会社・団体とは関係ありません。
 >
-> | | `main` ブランチ | `rich-ui` ブランチ |
-> |---|---|---|
-> | 入力画面 | 講座と同じシンプルなフォーム | スライダー＋数値入力、エリアの切り替えボタン、ダークテーマ |
-> | 予測 | 送信すると結果ページ | **動かした瞬間に予測が変わる**（`GET /api/predict` を JavaScript から呼ぶ） |
-> | 結果 | 「適正価格は ○○ です」 | 大きな数字、入力した条件の一覧、**どの条件が価格を上げ／下げたか**の棒グラフ |
+> | | `main` | `rich-ui` | `corporate-ui` |
+> |---|---|---|---|
+> | 見た目 | 講座と同じシンプルなフォーム | ダークテーマのダッシュボード風 | 白背景の会社サイト風（ヘッダー・ヒーロー・ご利用の流れ・フッター） |
+> | 予測 | 送信すると結果ページ | 動かした瞬間に予測が変わる | 同左 |
+> | 結果 | 「適正価格は ○○ です」 | 大きな数字・条件一覧・棒グラフ | 「査定結果レポート」形式 |
 >
 > ```bash
-> git clone -b rich-ui https://github.com/sayo4869/demle-day8-real-estate-webapp.git webapp-rich
-> # すでに clone してある人は： git switch rich-ui
+> git clone -b corporate-ui https://github.com/sayo4869/demle-day8-real-estate-webapp.git webapp-corp
+> # すでに clone してある人は： git switch corporate-ui
 > ```
 >
-> ![入力画面（スライダーを動かすと右の予測がその場で変わる）](docs/rich-ui-index.png)
-> ![結果ページ](docs/rich-ui-result.png)
-> <img src="docs/rich-ui-mobile.png" alt="スマホ幅での表示" width="480">
+> ![トップページ](docs/corporate-ui-index.png)
+> ![査定結果レポート](docs/corporate-ui-result.png)
+> <img src="docs/corporate-ui-mobile.png" alt="スマホ幅での表示" width="400">
 >
 > 棒グラフの値は「係数 × 標準化した値」です。線形モデル（SGDRegressor）なので、**切片 ＋ 棒の合計 ＝ 予測値** になります。
 > JavaScript が動かない環境でも、「結果ページで見る」ボタンで従来どおり予測できます。
