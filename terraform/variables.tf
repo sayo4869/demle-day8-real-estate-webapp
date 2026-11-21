@@ -18,9 +18,9 @@ variable "region" {
 }
 
 variable "instance_type" {
-  description = "EC2 のインスタンスタイプ（Day7 と同じ t2.micro。使えないアカウントでは t3.micro）"
+  description = "EC2 のインスタンスタイプ。t3.micro は無料枠の対象（2025年7月以降の新しいアカウントでは t2.micro は対象外）"
   type        = string
-  default     = "t2.micro"
+  default     = "t3.micro"
 }
 
 variable "public_key_path" {
