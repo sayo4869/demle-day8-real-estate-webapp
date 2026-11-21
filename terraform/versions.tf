@@ -11,7 +11,8 @@ terraform {
 }
 
 provider "aws" {
-  region = var.region # Day7 と同じ東京リージョン（ap-northeast-1）
+  region  = var.region      # Day7 と同じ東京リージョン（ap-northeast-1）
+  profile = var.aws_profile # どの AWS アカウントのアクセスキーを使うか
 
   # この Terraform で作ったものに共通のタグを付ける（AWS 画面で見分けやすくなる）
   default_tags {

@@ -3,6 +3,9 @@
 
 owner = "taro" # 自分の名前（英数字）
 
+# aws configure --profile で登録したプロファイル名
+aws_profile = "datamix-day8"
+
 # 自分の IP だけに絞るとき（https://checkip.amazonaws.com で調べられる）
 # allowed_cidr = "203.0.113.10/32"
 

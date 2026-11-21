@@ -5,6 +5,12 @@ variable "owner" {
   type        = string
 }
 
+variable "aws_profile" {
+  description = "aws configure --profile で登録したプロファイル名。null なら default（または環境変数 AWS_PROFILE）を使う"
+  type        = string
+  default     = null
+}
+
 variable "region" {
   description = "AWS のリージョン"
   type        = string

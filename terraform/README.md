@@ -46,14 +46,15 @@ AWS の画面右上の自分の名前 →「セキュリティ認証情報」→
 ダウンロードした `ユーザー名_accessKeys.csv` を開き、中のアクセスキー ID とシークレットアクセスキーを `aws configure` に貼り付けます。
 
 ```bash
-aws configure
+# --profile で名前を付けて登録する（今ある default を上書きしないため）
+aws configure --profile datamix-day8
 # AWS Access Key ID     : （CSV の Access key ID を貼る）
 # AWS Secret Access Key : （CSV の Secret access key を貼る）
 # Default region name   : ap-northeast-1
 # Default output format : json
 
 # 登録できたか確認（自分のアカウント ID が表示されれば OK）
-aws sts get-caller-identity
+aws sts get-caller-identity --profile datamix-day8
 ```
 
 > アクセスキーは GitHub のトークンと同じく、**絶対に GitHub に push しない**。登録したら CSV はダウンロードフォルダに置きっぱなしにしない。使い終わったら AWS の画面で無効化・削除する。
@@ -81,7 +82,7 @@ cd terraform
 cp terraform.tfvars.example terraform.tfvars    # PowerShell は copy
 ```
 
-`terraform.tfvars` の `owner` を自分の名前（英数字）に書き換えます。
+`terraform.tfvars` の `owner` を自分の名前（英数字）に、`aws_profile` を登録したプロファイル名に書き換えます。
 
 モデル（`model.pickle` と `scaler.pickle`）は、この `terraform` フォルダの1つ上（`webapp` フォルダ）に置いておきます（Day8 10章②と同じ場所）。
 

@@ -31,4 +31,6 @@ data/*.zip
 *.tfvars
 !*.tfvars.example
 crash.log
+tfplan
+*.tfplan
 .terraform.tfstate.lock.info
