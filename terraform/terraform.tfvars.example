@@ -1,0 +1,10 @@
+# このファイルを terraform.tfvars という名前でコピーして、値を書き換える
+#   cp terraform.tfvars.example terraform.tfvars
+
+owner = "taro" # 自分の名前（英数字）
+
+# 自分の IP だけに絞るとき（https://checkip.amazonaws.com で調べられる）
+# allowed_cidr = "203.0.113.10/32"
+
+# 別のリージョンに同じものを作るとき
+# region = "us-west-2"

@@ -1,0 +1,36 @@
+#!/bin/bash
+# EC2 が初めて起動したときに root で1回だけ実行される（ログ：/var/log/cloud-init-output.log）
+set -euxo pipefail
+
+# Day8 13章①：git と pip を入れる
+dnf install -y git python3-pip
+
+# ec2-user として clone して、必要なものを入れる（Day8 と同じく仮想環境は使わない）
+sudo -u ec2-user -H bash -c '
+  cd ~
+  git clone --branch "${repo_branch}" "${repo_url}" webapp
+  cd webapp
+  pip3 install --user -r requirements.txt
+'
+
+# Day7「SSH を閉じても動かし続けるには」：systemd に登録して、自動で起動・再起動する
+cat > /etc/systemd/system/webapp.service <<'UNIT'
+[Unit]
+Description=Day8 real estate price web app (FastAPI)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=ec2-user
+WorkingDirectory=/home/ec2-user/webapp
+ExecStart=/usr/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8080
+# モデルが届く前は起動に失敗するので、10秒おきにやり直す
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+
+systemctl daemon-reload
+systemctl enable webapp

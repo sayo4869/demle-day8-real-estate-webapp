@@ -23,3 +23,12 @@ data/*.zip
 *.pickle
 *.pkl
 *.joblib
+
+# --- Terraform（state には作ったリソースの情報が入るので公開しない） ---
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+.terraform.tfstate.lock.info

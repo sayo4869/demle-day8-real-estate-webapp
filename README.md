@@ -284,3 +284,8 @@ pkill -f uvicorn        # 止めるとき
 - [scikit-learn：SGDRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDRegressor.html)（`partial_fit` によるオンライン学習）
 - [scikit-learn：モデルの保存と注意点](https://scikit-learn.org/stable/model_persistence.html)（pickle のセキュリティとバージョン）
 - [Amazon EC2：SSH で接続](https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/connect-linux-inst-ssh.html)
+
+
+## Terraform で EC2 ごと作る（terraform ブランチ）
+
+AWS の画面での手作業（EC2 の起動・セキュリティグループ・デプロイ）を、コードで自動化したものが [`terraform/`](terraform/README.md) にあります。
